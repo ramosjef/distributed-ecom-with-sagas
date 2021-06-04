@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Payment.Orchestrator": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -1,0 +1,87 @@
+version: '3.4'
+
+services:
+  
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  mongodb:
+    image: 'mongo'
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ~/.docker-conf/mongo-volume/:/data/db
+    ports:
+      - 27017:27017
+      - 27019:27019
+
+  mongo-express:
+    image: mongo-express
+    links:
+    - mongodb
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@mongodb?ssl=false
+    depends_on:
+      - mongodb
+
+  checkoutapi:
+    image: ${DOCKER_REGISTRY-}checkoutapi
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8000:80"
+    build:
+      context: .
+      dockerfile: src/Checkout/Checkout.Api/Dockerfile
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+  checkoutorchestrator:
+    image: ${DOCKER_REGISTRY-}checkoutorchestrator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: src/Checkout/Checkout.Orchestrator/Dockerfile
+    depends_on:
+      - rabbitmq
+  
+  paymentorworker:
+    image: ${DOCKER_REGISTRY-}paymentworker
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: src/Boundaries/Payments/Payment.Worker/Dockerfile
+    depends_on:
+      - rabbitmq
+
+  vendororworker:
+    image: ${DOCKER_REGISTRY-}vendororworker
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: src/Boundaries/Vendors/Vendor.Worker/Dockerfile
+    depends_on:
+      - rabbitmq

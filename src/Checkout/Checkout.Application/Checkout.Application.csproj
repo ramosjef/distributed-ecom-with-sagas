@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="UseCases\CreateBillPayment\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.Messages\Shared.Messages.csproj" />
+    <ProjectReference Include="..\Checkout.Domain\Checkout.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
