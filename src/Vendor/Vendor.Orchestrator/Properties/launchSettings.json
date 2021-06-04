@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Vendor.Orchestrator": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

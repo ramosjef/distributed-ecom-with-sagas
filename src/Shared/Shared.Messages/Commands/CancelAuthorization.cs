@@ -1,0 +1,10 @@
+﻿using System;
+using MassTransit;
+
+namespace Shared.Messages.Commands
+{
+    public sealed class CancelAuthorization : CorrelatedBy<Guid>
+    {
+        public Guid CorrelationId { get; set; }
+    }
+}
